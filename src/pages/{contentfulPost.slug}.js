@@ -16,7 +16,6 @@ export const query = graphql`
     contentfulPost(id: { eq: $id }) {
       title
       publishDate(formatString: "DD MM YYYY")
-      body
     }
   }
 `
