@@ -1,5 +1,8 @@
 import * as React from 'react'
-import { Link } from 'gatsby'
+import { graphql, Link } from 'gatsby'
+
+import Title from '../components/Title'
+
 // styles
 const pageStyles = {
   color: '#232129',
@@ -126,11 +129,17 @@ const links = [
 ]
 
 // markup
-const IndexPage = () => {
+const IndexPage = ({ data }) => {
+  console.log(data)
+  // const posts = data.allMdx.edges
+  const pages = data.allContentfulPage.edges
+
+  console.log(pages)
   return (
     <main style={pageStyles}>
       <title>Home Page</title>
       <Link to='/about'>About</Link>
+      <Title />
       <h1 style={headingStyles}>
         Congratulations
         <br />
@@ -147,31 +156,15 @@ const IndexPage = () => {
         </span>
       </p>
       <ul style={listStyles}>
-        <li style={docLinkStyle}>
-          <a
-            style={linkStyle}
-            href={`${docLink.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter`}
-          >
-            {docLink.text}
-          </a>
-        </li>
-        {links.map(link => (
-          <li key={link.url} style={{ ...listItemStyles, color: link.color }}>
-            <span>
-              <a
-                style={linkStyle}
-                href={`${link.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter`}
-              >
-                {link.text}
-              </a>
-              {link.badge && (
-                <span style={badgeStyle} aria-label='New Badge'>
-                  NEW!
-                </span>
-              )}
-              <p style={descriptionStyle}>{link.description}</p>
-            </span>
+        {/* {posts.map(({ node }) => (
+          <li key={node.id}>
+            <Link to={node.slug}>
+              {node.frontmatter.title} - {node.frontmatter.date}
+            </Link>
           </li>
+        ))} */}
+        {pages.map(({ node }) => (
+          <li key={node.id}>{node.title}</li>
         ))}
       </ul>
       <img
@@ -181,5 +174,31 @@ const IndexPage = () => {
     </main>
   )
 }
+
+export const query = graphql`
+  query {
+    allMdx(sort: { fields: frontmatter___date, order: DESC }) {
+      edges {
+        node {
+          id
+          frontmatter {
+            date(formatString: "DD MMMM YYYY")
+            title
+          }
+          slug
+        }
+      }
+    }
+    allContentfulPage {
+      edges {
+        node {
+          id
+          title
+          slug
+        }
+      }
+    }
+  }
+`
 
 export default IndexPage
